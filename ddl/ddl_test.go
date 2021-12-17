@@ -107,9 +107,9 @@ func testNewDDLAndStart(ctx context.Context, options ...Option) (*ddl, error) {
 	return d, err
 }
 
-func testCreateStore(c *C, name string) kv.Storage {
+func testCreateStore(t *testing.T, name string) kv.Storage {
 	store, err := mockstore.NewMockStore()
-	c.Assert(err, IsNil)
+	require.Nil(t, err)
 	return store
 }
 
@@ -119,14 +119,14 @@ func testNewContext(d *ddl) sessionctx.Context {
 	return ctx
 }
 
-func getSchemaVer(c *C, ctx sessionctx.Context) int64 {
+func getSchemaVer(t *testing.T, ctx sessionctx.Context) int64 {
 	err := ctx.NewTxn(context.Background())
-	c.Assert(err, IsNil)
+	require.Nil(t, err)
 	txn, err := ctx.Txn(true)
-	c.Assert(err, IsNil)
+	require.Nil(t, err)
 	m := meta.NewMeta(txn)
 	ver, err := m.GetSchemaVersion()
-	c.Assert(err, IsNil)
+	require.Nil(t, err)
 	return ver
 }
 
@@ -148,14 +148,14 @@ type historyJobArgs struct {
 	tblIDs map[int64]struct{}
 }
 
-func checkEqualTable(c *C, t1, t2 *model.TableInfo) {
-	c.Assert(t1.ID, Equals, t2.ID)
-	c.Assert(t1.Name, Equals, t2.Name)
-	c.Assert(t1.Charset, Equals, t2.Charset)
-	c.Assert(t1.Collate, Equals, t2.Collate)
-	c.Assert(t1.PKIsHandle, DeepEquals, t2.PKIsHandle)
-	c.Assert(t1.Comment, DeepEquals, t2.Comment)
-	c.Assert(t1.AutoIncID, DeepEquals, t2.AutoIncID)
+func checkEqualTable(t *testing.T, t1, t2 *model.TableInfo) {
+	require.Equal(t, t1.ID, t2.ID)
+	require.Equal(t, t1.Name, t2.Name)
+	require.Equal(t, t1.Charset, t2.Charset)
+	require.Equal(t, t1.Collate, t2.Collate)
+	require.EqualValues(t, t1.PKIsHandle, t2.PKIsHandle)
+	require.EqualValues(t, t1.Comment, t2.Comment)
+	require.EqualValues(t, t1.AutoIncID, t2.AutoIncID)
 }
 
 func checkEqualTableT(t *testing.T, t1, t2 *model.TableInfo) {
